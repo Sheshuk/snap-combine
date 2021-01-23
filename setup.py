@@ -7,10 +7,11 @@ setup(name='snap-combine',
         description='SuperNova Async Pipeline: combining',
         author='Andrey Sheshukov',
         author_email='ash@jinr.ru',
-        packages=['snap.combine','snap.util'],
+        packages=['snap.combine','snap.util','snap.client'],
+        py_modules=['snap.datablock'],
         install_requires=['numpy','pandas',
-                          'snap-base @ https://github.com/Sheshuk/snap-base/archive/v0.1.tar.gz',
-                          'sn_stat @ https://github.com/Sheshuk/sn_stat/archive/v0.1.tar.gz',
+                          'snap-base >=1.0.1',
+                          'sn_stat',
         ]
      )
 
