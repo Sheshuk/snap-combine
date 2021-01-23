@@ -34,5 +34,6 @@ class SigCalculator:
         #calculate significance
         zs = self.sc([self.data], ts)
         #drop obsolete data
-        self.drop_tail(ts[-1]+self.dt + tw0)
-        return DataBlock(ts,zs)
+        t_last = ts[-1]+self.dt
+        self.drop_tail(t_last + tw0)
+        return DataBlock(np.append(ts,t_last),zs)
