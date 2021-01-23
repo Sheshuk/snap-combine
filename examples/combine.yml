@@ -1,0 +1,8 @@
+node:
+    receive:
+        source: 
+            .zeromq.recv: {address: "ipc://ipc_combiner"}
+        steps:
+            - .util.misc.dump_to_file: {fname: "combiner.dat"}
+            - .util.monitor.tqdm_ticker: {desc: "Data", colour: "red", total: 10, ncols: 10}
+

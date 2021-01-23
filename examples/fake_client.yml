@@ -1,0 +1,25 @@
+signal_shapes:
+  - &signal
+    - [-2.0, 0.2, 10]
+    - [0,    10,   0]
+
+node:
+    generate:
+        source: 
+            .client.fake.sample_ts: {B: 5, S: *signal, tSN: 120, tChunk: 10}
+        steps:
+            - .util.monitor.tqdm_ticker: {desc: "Data", colour: "red", total: 10, ncols: 10}
+        to: sigcalc
+
+    sigcalc:
+        steps:
+            - .client.sigcalc.SigCalculator: {B: 5,S: *signal,time_window: [0.0,10.0], dt: 0.1}
+            - .util.monitor.tqdm_ticker: {desc: "DataBlock", colour: "blue", total: 10}
+            - .util.misc.dump_to_file: {fname: "sigcalc.dat"}
+        to: threshold
+
+    threshold:
+            - .util.threshold.Threshold: {thr: 2 }
+            - .util.monitor.tqdm_ticker: {desc: "Theshold"}
+            - .util.misc.dump_to_file: {fname: "trigger.dat"}
+
