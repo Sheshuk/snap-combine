@@ -13,11 +13,5 @@ async def sample_ts(B, S=0, tSN=0, tChunk=10):
         for t in ts:
             await asyncio.sleep(t-t0)
             t0=t
-            yield t
-
-def timestamp(shift=0):
-    """Produce a timestamp on each input"""
-    def _f(data):
-        return timing.now()+shift
-    return _f
+            yield timing.now()
 
