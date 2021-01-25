@@ -1,14 +1,9 @@
-from snap.datablock import DataBlock
+from .datablock import DataBlock
 import numpy as np
-from hypothesis import given, assume, strategies as st
+from hypothesis import given, assume, example, strategies as st
 import pytest
 
-d1 = DataBlock(ts=[0.,1.,2.], zs=[1.,2.], id=1)
-d2 = DataBlock(ts=[2.,3.,4.], zs=[3.,4.], id=1)
-d3 = DataBlock(ts=[5.,6.,7.], zs=[5.,6.], id=1)
-
-
-time_val = st.floats(allow_nan=False)
+time_val = st.floats(-1e10,1e10,allow_nan=False, allow_infinity=False)
 times =      st.lists(time_val, min_size=2,max_size=10000, unique=True).map(sorted)
 times_long = st.lists(time_val, min_size=10,max_size=10000, unique=True).map(sorted)
 
@@ -59,21 +54,23 @@ def test_add(ts1,ts2):
         assert np.allclose(d12.ts, np.concatenate([d1.ts,d2.ts]) )
         assert np.allclose(d12.zs, np.concatenate([d1.zs,[np.nan],d2.zs]), equal_nan=True)
 
-@given(ts=times)
-def test_slice_full(ts):
+@given(ts=times, p=st.floats(0.0,1.0))
+def test_at(ts, p):
     d = random_DataBlock(ts)
-    assert d.slice(-np.inf,np.inf) == d
-    assert d.slice(ts[0],ts[-1]) == d
+    tc = p*d.ts[1:]+(1.-p)*d.ts[:-1]
+    assert all(d.find_idx(tc) == np.arange(len(d)))
+    assert np.allclose(d.at(tc), d.zs)
 
-@given(ts=times, t0=time_val, t1=time_val)
-def test_slice_inside(ts,t0,t1):
+@given(ts=times)
+def test_at_border(ts):
     d = random_DataBlock(ts)
-    ds = d.slice(t0,t1)
-   
-    assert ds.T0()==max(t0,d.T0())
-    assert ds.T1()==min(t1,d.T1())
-    
-    idx_sel = (d.ts>=t0)&(d.ts<=t1)
-    assert ds.zs == d.zs[idx_sel]
+    assert np.all(d.find_idx(ts) == np.arange(len(d)+1))
+    assert np.allclose(d.at(ts[:-1]), d.zs)
+
+@given(ts=times)
+def test_outside(ts):
+    d = random_DataBlock(ts)
+    assert np.isnan(d.at(d.T0()-100.))
+    assert np.isnan(d.at(d.T1()+100.))
 
 

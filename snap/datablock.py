@@ -56,19 +56,11 @@ class DataBlock:
         return idx
 
     def at(self, t):
+        """Return z value at given time. If outside range, return NaN"""
         idx = self.find_idx(t,clip=False)
-        idx[idx>len(self.zs)]=-1
-        res = self.zs[idx]
-        idx[idx<0] = np.nan
-
-        
-    def slice(self, t0,t1):
-        i0,i1 = self.find_idx([t0,t1], clip=True)
-        i1+=1
-        ts=self.ts[i0:i1+1]
-        #clip the limits to requested
-        ts[0 ] = max(ts[0], t0)
-        ts[-1] = min(ts[-1],t1)
-        return DataBlock(id=self.id, ts=ts, zs=self.zs[i0:i1])
-
+        idx = np.array(idx)
+        idx[idx>len(self.zs)-1]=-1
+        res = np.array(self.zs[idx])
+        res[idx<0] = np.nan
+        return res
 
