@@ -24,13 +24,21 @@ def test_new_clients(ts):
 @given(ts=times)
 def test_append_data(ts):
     buf = DataBuffer()
-    d1 = make_data(1,ts,1)
-    d2 = make_data(1,np.array(ts)+(ts[-1]-ts[0]),2)
+    d1 = make_data(1,ts)
+    d2 = make_data(1,np.array(ts)+(ts[-1]-ts[0]))
     d2.ts+=d1.T1()-d1.T0() #shift the time
     buf.put(d1)
     buf.put(d2)
     assert buf.clients == {d1.id: d1+d2}
-    assert buf.clients[d1.id].T0() == d1.T0()
-    assert buf.clients[d1.id].T1() == d2.T1()
-           
+
+@given(ts1=times, ts2=times, tget=times)
+def test_at(ts1,ts2,tget):
+    buf = DataBuffer()
+    d1 = make_data(1,ts1)
+    d2 = make_data(2,ts2)
+    buf.put(d1)
+    buf.put(d2)
+    assert np.allclose( buf.at(tget), [d1.at(tget), d2.at(tget)], equal_nan=True)
+
+
 

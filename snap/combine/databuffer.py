@@ -4,15 +4,17 @@ class DataBuffer:
     def __init__(self, time_precision=1e-5):
         self.time_precision=time_precision
         self.clients = {}
+
     def put(self, data: DataBlock):
         """Add DataBlock to the buffer"""
         if data.id in self.clients:
             self.clients[data.id]+=data
         else:
             self.clients[data.id]=data
+
     def at(self, ts):
         """Return client values at given times"""
-        return [c.at(ts) for c in self.clients]
+        return [d.at(ts) for d in self.clients.values()]
 
     def slice_ts(self,t0,t1):
         """Get all the unique bin edges in given interval"""
