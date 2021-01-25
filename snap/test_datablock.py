@@ -3,7 +3,7 @@ import numpy as np
 from hypothesis import given, assume, example, strategies as st
 import pytest
 
-time_val = st.floats(-1e10,1e10,allow_nan=False, allow_infinity=False)
+time_val = st.floats(-1e10,1e10,width=32,allow_nan=False, allow_infinity=False)
 times =      st.lists(time_val, min_size=2,max_size=10000, unique=True).map(sorted)
 times_long = st.lists(time_val, min_size=10,max_size=10000, unique=True).map(sorted)
 
@@ -22,14 +22,14 @@ def test_limits(ts):
 @given(ts=times_long)
 def test_add_adjascent(ts):
     #split the list in two
-    d1=random_DataBlock(ts[:6])
-    d2=random_DataBlock(ts[5:])
+    d1=random_DataBlock(ts)
+    d2=random_DataBlock(d1.ts+(ts[-1]-ts[0]))
 
     d12 = d1+d2
-    assert np.allclose(d12.ts, ts)
-    assert np.allclose(d12.zs, np.append(d1.zs, d2.zs))
     assert d12.id==d1.id
-    assert len(d12)==len(ts)-1
+    assert len(d12)==len(d1)+len(d2)
+    assert np.allclose(d12.ts, np.concatenate([d1.ts,d2.ts[1:]]) )
+    assert np.allclose(d12.zs, np.concatenate([d1.zs,d2.zs]), equal_nan=True)
 
 @given(ts1=times, ts2=times)
 def test_add(ts1,ts2):
@@ -54,7 +54,7 @@ def test_add(ts1,ts2):
         assert np.allclose(d12.ts, np.concatenate([d1.ts,d2.ts]) )
         assert np.allclose(d12.zs, np.concatenate([d1.zs,[np.nan],d2.zs]), equal_nan=True)
 
-@given(ts=times, p=st.floats(0.0,1.0))
+@given(ts=times, p=st.floats(0.0,1.0, exclude_max=True))
 def test_at(ts, p):
     d = random_DataBlock(ts)
     tc = p*d.ts[1:]+(1.-p)*d.ts[:-1]
@@ -73,4 +73,9 @@ def test_outside(ts):
     assert np.isnan(d.at(d.T0()-100.))
     assert np.isnan(d.at(d.T1()+100.))
 
-
+@given(ts=times, precision=st.floats(1e-10,1e2))
+def test_precision(ts, precision):
+    d = random_DataBlock(ts).apply_precision(precision)
+    dt = np.diff(d.ts)
+    assert all((dt==0)|(dt>=precision))
+ 

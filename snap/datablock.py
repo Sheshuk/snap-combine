@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 import numpy as np
 
+PRECISION=1e-8
+
 @dataclass(init=False, eq=False)
 class DataBlock:
     ts: np.ndarray
@@ -8,7 +10,7 @@ class DataBlock:
     id: str = None
 
     def __init__(self, ts, zs, id=None):
-        self.ts = np.array(ts)
+        self.ts = np.array(ts, dtype=np.float64)
         self.zs = np.array(zs)
         self.id=id
         if(len(zs)!=len(ts)-1):
@@ -33,21 +35,20 @@ class DataBlock:
         """ Concatenate two datablocks of the same id"""
         if(self.id!=other.id):
             raise ValueError(f"Cannot add DataBlocks with d1.id={self.id} != d2.id={self.id}")
-        if(self.T1()>other.T0()):
-            raise ValueError(f"Cannot add DataBlocks with d1.T1={self.T1()} > d2.T0={other.T0()}")
-
-        if(self.T1()==other.T0()):
+        if(np.isclose(self.T1(),other.T0(),atol=PRECISION)):
             return DataBlock(
                     id=self.id, 
-					ts = np.concatenate([self.ts, other.ts[1:]]),
+                    ts = np.concatenate([self.ts, other.ts[1:]]),
                     zs = np.concatenate([self.zs, other.zs])
                     )
-        else:
+        elif(self.T1()<other.T0()):
             return DataBlock(
                     id=self.id, 
-					ts = np.concatenate([self.ts, other.ts]),
+                    ts = np.concatenate([self.ts, other.ts]),
                     zs = np.concatenate([self.zs,[np.nan], other.zs])
                     )
+        else:
+            raise ValueError(f"Cannot add DataBlocks with d1.T1={self.T1()} > d2.T0={other.T0()}")
 
 
     def find_idx(self, ts, clip:bool = False):
@@ -63,4 +64,9 @@ class DataBlock:
         res = np.array(self.zs[idx])
         res[idx<0] = np.nan
         return res
+
+    def apply_precision(self, precision=1e-3):
+        """Round timestamps to given precision"""
+        self.ts = precision*np.round(self.ts/precision)
+        return self
 
