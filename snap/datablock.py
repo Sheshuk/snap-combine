@@ -11,7 +11,7 @@ class DataBlock:
 
     def __init__(self, ts, zs, id=None):
         self.ts = np.array(ts, dtype=np.float64)
-        self.zs = np.array(zs)
+        self.zs = np.array(zs, dtype=np.float64)
         self.id=id
         if(len(zs)!=len(ts)-1):
             raise ValueError(f"DataBlock sizes mismatch: ts ({len(ts)}) != zs ({len(zs)})+1")
