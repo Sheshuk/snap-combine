@@ -1,4 +1,5 @@
 from ..datablock import DataBlock
+import numpy as np
 
 class DataBuffer:
     def __init__(self, time_precision=1e-5):
@@ -18,7 +19,7 @@ class DataBuffer:
 
     def slice_ts(self,t0,t1):
         """Get all the unique bin edges in given interval"""
-        ts=[c.ts[(c.ts>t0)&(c.ts<t1)] for c in self.clients]
+        ts=[d.ts[(d.ts>t0)&(d.ts<t1)] for d in self.clients.values()]
         ts = np.concatenate(ts+[[t0,t1]])
         return np.unique(ts)
 

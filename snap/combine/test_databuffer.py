@@ -40,5 +40,17 @@ def test_at(ts1,ts2,tget):
     buf.put(d2)
     assert np.allclose( buf.at(tget), [d1.at(tget), d2.at(tget)], equal_nan=True)
 
+@given(ts1=times,ts2=times,t0=time_val, t1=time_val)
+def test_slice_ts(ts1,ts2,t0,t1):
+    buf = DataBuffer()
+    d1 = make_data(1,ts1)
+    d2 = make_data(2,ts2)
+    buf.put(d1)
+    buf.put(d2)
+    tslice = buf.slice_ts(t0,t1)
+    for d in [d1,d2]:
+        assert all(np.isin(d.ts[(d.ts>t0) & (d.ts<t1)],tslice))
+    assert all(np.isin([t0,t1],tslice))
+
 
 
