@@ -68,14 +68,7 @@ def test_at_border(ts):
     assert np.allclose(d.at(ts[:-1]), d.zs)
 
 @given(ts=times)
-def test_outside(ts):
+def test_at_outside(ts):
     d = random_DataBlock(ts)
     assert np.isnan(d.at(d.T0()-100.))
     assert np.isnan(d.at(d.T1()+100.))
-
-@given(ts=times, precision=st.floats(1e-10,1e2))
-def test_precision(ts, precision):
-    d = random_DataBlock(ts).apply_precision(precision)
-    dt = np.diff(d.ts)
-    assert all((dt==0)|(dt>=precision))
- 
