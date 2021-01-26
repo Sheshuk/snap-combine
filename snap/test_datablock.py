@@ -72,3 +72,18 @@ def test_at_outside(ts):
     d = random_DataBlock(ts)
     assert np.isnan(d.at(d.T0()-100.))
     assert np.isnan(d.at(d.T1()+100.))
+
+@given(ts=times, t0=time_val)
+def test_drop_tail(ts, t0):
+    d0 = random_DataBlock(ts)
+    d1 = d0.drop_tail(t0)
+    if t0<d0.T0():
+        assert d1==d0
+    else:
+        assert d1.T0()==t0
+        assert all(d1.ts>=t0)
+        assert np.allclose(d1.ts[1:],d0.ts[d0.ts>t0])
+        if t0>d0.T1():
+            assert len(d1)==0
+            assert d1.ts[0]==t0
+

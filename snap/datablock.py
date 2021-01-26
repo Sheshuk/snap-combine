@@ -70,3 +70,15 @@ class DataBlock:
         self.ts = precision*np.round(self.ts/precision)
         return self
 
+    def drop_tail(self, t0):
+        """Create new datablock with the data above given t0"""
+        if t0<self.T0():
+            ts = self.ts
+            zs = self.zs
+        else:
+            idx = self.find_idx(t0, clip=False)
+            ts = np.append([t0],self.ts[idx+1:])
+            zs = self.zs[idx:]
+
+        return DataBlock(id=self.id,ts=ts,zs=zs)
+
