@@ -36,23 +36,24 @@ def test_add(ts1,ts2):
     d1=random_DataBlock(ts1)
     d2=random_DataBlock(ts2)
 
-    if d1.T1()>d2.T0():
-        with pytest.raises(ValueError, match='Cannot add DataBlocks with d1.T1'):
-            d12 = d1+d2
-
-    elif d1.T1()==d2.T0():
+    
+    if np.isclose(d1.T1(),d2.T0()):
         d12 = d1+d2
         assert d12.id==d1.id
         assert len(d12)==len(d1)+len(d2)
         assert np.allclose(d12.ts, np.concatenate([d1.ts,d2.ts[1:]]) )
         assert np.allclose(d12.zs, np.concatenate([d1.zs,d2.zs]), equal_nan=True)
 
-    else:
+    elif d1.T1()<d2.T0():
         d12 = d1+d2
         assert d12.id==d1.id
         assert len(d12)==len(d1)+len(d2)+1
         assert np.allclose(d12.ts, np.concatenate([d1.ts,d2.ts]) )
         assert np.allclose(d12.zs, np.concatenate([d1.zs,[np.nan],d2.zs]), equal_nan=True)
+
+    else:
+        with pytest.raises(ValueError, match='Cannot add DataBlocks with d1.T1'):
+            d12 = d1+d2
 
 @given(ts=times, p=st.floats(0.0,1.0, exclude_max=True))
 def test_at(ts, p):
