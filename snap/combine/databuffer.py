@@ -15,7 +15,7 @@ class DataBuffer:
 
     def at(self, ts):
         """Return client values at given times"""
-        return [d.at(ts) for d in self.clients.values()]
+        return np.stack([d.at(ts) for d in self.clients.values()], axis=1)
 
     def slice_ts(self,t0,t1):
         """Get all the unique bin edges in given interval"""

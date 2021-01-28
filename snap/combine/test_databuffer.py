@@ -38,7 +38,10 @@ def test_at(ts1,ts2,tget):
     d2 = make_data(2,ts2)
     buf.put(d1)
     buf.put(d2)
-    assert np.allclose( buf.at(tget), [d1.at(tget), d2.at(tget)], equal_nan=True)
+    res = buf.at(tget)
+    assert res.shape==(len(tget),2)
+    assert len(res)==len(tget)
+    assert np.allclose( buf.at(tget).T, [d1.at(tget), d2.at(tget)], equal_nan=True)
 
 @given(ts1=times,ts2=times,t0=time_val, t1=time_val)
 def test_slice_ts(ts1,ts2,t0,t1):
