@@ -23,3 +23,8 @@ class DataBuffer:
         ts = np.concatenate(ts+[[t0,t1]])
         return np.unique(ts)
 
+    def drop_tail(self, t0):
+        """Drop data older that t0"""
+        for d in self.clients.values():
+            d = d.drop_tail(t0)
+
