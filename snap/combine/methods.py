@@ -9,6 +9,7 @@ def x2p(x, Nexp):
     return chi2.sf(x, df=2*Nexp)
 
 def Fisher(data: DataBlock) -> DataBlock:
+    """Fisher combination method """
     zs = np.ma.masked_invalid(data.zs)
     ps = np.ma.masked_array(z2p(zs),zs.mask)
     X = -2*np.sum(np.log(ps),axis=1)
@@ -19,6 +20,18 @@ def Fisher(data: DataBlock) -> DataBlock:
     return DataBlock(ts=data.ts,zs=zc)
 
 def Stouffer(weights: dict):
+    """Stouffer combination method: 
+    combined significance is linear combination of all significances:
+        z_c = sum(z_i * w_i)
+
+    Parameters
+    -------
+    weights: dict (srt, float)
+        Mapping det_id: w_i, providing the coefficients for linear combination
+
+    Weights don't need to be normalized: 
+    the normalization is calculated depending on which detector ids are present in a given datablock id
+    """
     def _f(data: DataBlock) -> DataBlock:
         zs = np.ma.masked_invalid(data.zs)
         #calculate weights for each point

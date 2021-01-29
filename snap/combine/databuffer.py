@@ -2,8 +2,8 @@ from ..datablock import DataBlock
 import numpy as np
 
 class DataBuffer:
-    def __init__(self, time_precision=1e-5):
-        self.time_precision=time_precision
+    """A buffer, storing the data for multiple clients """
+    def __init__(self):
         self.clients = {}
 
     def put(self, data: DataBlock):
@@ -14,7 +14,7 @@ class DataBuffer:
             self.clients[data.id]=data
 
     def at(self, ts):
-        """Return client values at given times"""
+        """Return data values at given times"""
         return np.stack([d.at(ts) for d in self.clients.values()], axis=1)
 
     def slice_ts(self,t0,t1):
