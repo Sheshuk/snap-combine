@@ -3,14 +3,14 @@ node:
         source: 
             .zeromq.recv: {address: "ipc://ipc_combiner"}
         steps:
-            - .util.misc.dump_to_file: {fname: "combiner.dat"}
-            - .util.monitor.tqdm_ticker: {desc: "Data", colour: "red", total: 10, ncols: 10}
+            - .util.monitor.tqdm_ticker: {desc: "Data received"}
+            - .util.misc.dump_to_file: {fname: "data_received.dat"}
             - .combine.Buffer: {delay: 5, timeout: 600}
             - .combine.methods.Fisher
-            - .util.monitor.tqdm_ticker: {desc: "Combine"}
-            - .util.misc.dump_to_file: {fname: "combined.dat"}
+            - .util.monitor.tqdm_ticker: {desc: "Data combined"}
+            - .util.misc.dump_to_file: {fname: "data_combined.dat"}
             - .util.threshold.Threshold: {thr: 5}
             - .util.monitor.tqdm_ticker: {desc: "Trigger"}
-            - .util.misc.dump_to_file: {fname: "triggered.dat"}
+            - .util.misc.dump_to_file: {fname: "data_triggered.dat"}
 
 
