@@ -1,4 +1,3 @@
-from . import methods
-from .combiner import Combiner
+from .methods import Fisher,Stouffer
 from .buffer import Buffer
 
