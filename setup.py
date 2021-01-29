@@ -3,7 +3,7 @@
 from setuptools import setup
 
 setup(name='snap-combine',
-        version='0.5.1',
+        version='0.5.2',
         description='SuperNova Async Pipeline: combining',
         author='Andrey Sheshukov',
         author_email='ash@jinr.ru',
