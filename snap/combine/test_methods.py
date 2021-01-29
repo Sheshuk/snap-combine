@@ -1,5 +1,5 @@
-from .methods import Fisher, Stouffer
-from ..datablock import DataBlock
+from snap.combine.methods import Fisher, Stouffer
+from snap.datablock import DataBlock
 import numpy as np
 from hypothesis import given, assume, example, strategies as st
 from hypothesis.extra import numpy as nps

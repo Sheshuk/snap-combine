@@ -1,4 +1,4 @@
-from .databuffer import DataBlock, DataBuffer
+from snap.combine.databuffer import DataBlock, DataBuffer
 import numpy as np
 from hypothesis import given, assume, example, strategies as st
 import pytest

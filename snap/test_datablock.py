@@ -1,4 +1,4 @@
-from .datablock import DataBlock
+from snap.datablock import DataBlock
 import numpy as np
 from hypothesis import given, assume, example, strategies as st
 import pytest

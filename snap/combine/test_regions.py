@@ -1,5 +1,5 @@
 import asyncio
-from .regions import RegionsQueue
+from snap.combine.regions import RegionsQueue
 from hypothesis import given, assume, example, strategies as st
 import numpy as np
 import pytest
