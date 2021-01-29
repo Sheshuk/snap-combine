@@ -4,5 +4,13 @@ node:
             .zeromq.recv: {address: "ipc://ipc_combiner"}
         steps:
             - .util.misc.dump_to_file: {fname: "combiner.dat"}
-            - .util.monitor.tqdm_ticker: {desc: "Data", colour: "red", total: 10, ncols: 10}
+              #- .util.monitor.tqdm_ticker: {desc: "Data", colour: "red", total: 10, ncols: 10}
+        to: combine
+    combine:
+        steps:
+            - .combine.Buffer: {delay: 5, timeout: 600}
+            - .combine.methods.Fisher
+            - .util.monitor.tqdm_ticker: {desc: "Combine"}
+              #- .util.misc.dump
+            - .util.misc.dump_to_file: {fname: "buffr.dat"}
 

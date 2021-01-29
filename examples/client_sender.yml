@@ -1,16 +1,32 @@
 signal_shapes:
-  - &signal
+  - &signal1
     - [-2.0, 0.2, 10]
     - [0,    10,   0]
 
+  - &signal2
+    - [0,  20]
+    - [20,  0]
 
-node:
+
+node1:
     generate:
         source: 
-            .client.fake.sample_ts: {B: 5, S: *signal, tSN: 120, tChunk: 10}
+            .client.fake.sample_ts: {B: 2, S: *signal1, tSN: 120}
         steps:
             - .util.monitor.tqdm_ticker: {desc: "Data"}
-            - .client.sigcalc.SigCalculator: {B: 5,S: *signal,time_window: [0.0,10.0], dt: 0.1}
+            - .client.sigcalc.SigCalculator: {B: 2,S: *signal1,time_window: [-2.0,10.0], dt: 0.1}
             - .util.monitor.tqdm_ticker: {desc: "DataBlocks"}
+            - .client.setId: {id: "client1"}
+            - .zeromq.send: {address: "ipc://ipc_combiner"}
+
+node2:
+    generate:
+        source: 
+            .client.fake.sample_ts: {B: 5, S: *signal2, tSN: 120}
+        steps:
+            - .util.monitor.tqdm_ticker: {desc: "Data"}
+            - .client.sigcalc.SigCalculator: {B: 5,S: *signal2,time_window: [0.0,20.0], dt: 0.5}
+            - .util.monitor.tqdm_ticker: {desc: "DataBlocks"}
+            - .client.setId: {id: "client2"}
             - .zeromq.send: {address: "ipc://ipc_combiner"}
 
