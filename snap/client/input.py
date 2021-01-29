@@ -1,5 +1,6 @@
 import sys, asyncio
 from concurrent.futures import ThreadPoolExecutor
+import numpy as np
 
 async def read_file(fname, size, columns, delay=0):
     fo = sys.stdin if fname=='stdin' else open(fname)
