@@ -5,7 +5,15 @@ Code for combining SN significance from several detectors/experiments
 
 This package contains plugins for [SNAP](https://github.com/Sheshuk/snap-base) framework.
 
+## Installation
+```
+python -m pip install snap-combine
+```
+
 ## Plugins
+
+This package contains plugins which can be used in new snap pipeline configurations.
+
 #### Monitoring: `snap.util.monitor`
 
 * `tqdm_ticker`: a provides [tqdm](https://github.com/tqdm/tqdm)-based ticker, which counts the data flow and data rate through current step.
