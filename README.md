@@ -7,30 +7,30 @@ Code for combining SN significance from several detectors/experiments
 This package contains plugins for [SNAP](https://github.com/Sheshuk/snap-base) framework.
 
 ## Plugins
-### Monitoring: `snap.util.monitor`
+#### Monitoring: `snap.util.monitor`
 
 * `tqdm_ticker`: a provides [tqdm](https://github.com/tqdm/tqdm)-based ticker, which counts the data flow and data rate through current step.
 
-### Generating client data: `snap.client.fake`
+#### Generating client data: `snap.client.fake`
 
 * `sample_ts`: Generates the neutrino interaction timestamps, using the given rate. Can simulate the supernova signal at the given time.
 
-### Processing client data: `snap.client`
+#### Processing client data: `snap.client`
 
 * `sigcalc.ShapeAnalysis`: calculate supernova significance using shape analysis
 * `setId`: change the datablock ID
 
-### Combination: `snap.combine`:
+#### Combination: `snap.combine`:
 
 * `Buffer`: accumulate the data to synchrnize before combining
 * `methods.Fisher`:   combine data using Fisher's combination method
 * `methods.Stouffer`: combine data using Stouffer's combination method
 
-### Triggering: `snap.util.threshold`
+#### Triggering: `snap.util.threshold`
 
 * Threshold: select and forward only portions of data with significance above given threshold
 
-### Misc: `snap.util`
+#### Misc: `snap.util`
 
 * `dump_to_file`: Dump data to given file
 
