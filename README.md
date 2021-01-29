@@ -1,5 +1,7 @@
 # snap-combine
 
+![Python package](https://github.com/Sheshuk/snap-combine/workflows/Python%20package/badge.svg?branch=master)
+
 Code for combining SN significance from several detectors/experiments
 
 This package contains plugins for [SNAP](https://github.com/Sheshuk/snap-base) framework.
