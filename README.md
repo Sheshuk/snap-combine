@@ -1,6 +1,7 @@
 # snap-combine
 
 ![Python package](https://github.com/Sheshuk/snap-combine/workflows/Python%20package/badge.svg)
+![Upload Python Package](https://github.com/Sheshuk/snap-combine/workflows/Upload%20Python%20Package/badge.svg)
 
 Code for combining SN significance from several detectors/experiments
 
