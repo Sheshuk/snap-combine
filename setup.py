@@ -9,9 +9,10 @@ setup(name='snap-combine',
         author_email='ash@jinr.ru',
         packages=['snap.combine','snap.util','snap.client'],
         py_modules=['snap.datablock'],
-        install_requires=['numpy',
+        install_requires=['numpy >= 1.19',
                           'snap-base >=1.0.1',
                           'sn_stat',
+                          'tqdm >= 4.53',
         ]
      )
 
