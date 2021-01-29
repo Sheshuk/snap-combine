@@ -1,18 +1,18 @@
 from snap.combine.methods import Fisher, Stouffer
 from snap.datablock import DataBlock
 import numpy as np
-from hypothesis import given, assume, example, strategies as st
+from hypothesis import given, strategies as st
 from hypothesis.extra import numpy as nps
 import pytest
 
-z_value = st.floats(-5,5)
-n_points = st.integers(1,100)
-n_clients= st.integers(1,5)
+z_value = st.floats(-5, 5)
+n_points = st.integers(1, 100)
+n_clients= st.integers(1, 5)
 
 
 def make_DataBlock(zs, ids:str='c_{n}'):
     return DataBlock(zs=zs,
-            ts=np.linspace(0,10,zs.shape[0]+1),
+            ts=np.linspace(0, 10, zs.shape[0]+1),
             id=[ids.format(n=n) for n in range(zs.shape[1])]
             )
 
@@ -25,7 +25,7 @@ def datablocks(npoints: int, nclients: int):
             )
 
 
-@given(d=datablocks(1000,nclients=1))
+@given(d=datablocks(1000, nclients=1))
 def test_Fisher_single_changes_nothing(d):
     d1 = Fisher(d)
     #assert d1.zs.shape ==(len(d.zs),)

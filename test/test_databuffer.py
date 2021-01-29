@@ -1,10 +1,10 @@
 from snap.combine.databuffer import DataBlock, DataBuffer
 import numpy as np
-from hypothesis import given, assume, example, strategies as st
+from hypothesis import given, strategies as st
 import pytest
 
-time_val = st.floats(-1e10,1e10,allow_nan=False, allow_infinity=False)
-times    = st.lists(time_val, min_size=2,max_size=10000, unique=True).map(sorted)
+time_val = st.floats(-1e10, 1e10, allow_nan=False, allow_infinity=False)
+times    = st.lists(time_val, min_size=2, max_size=10000, unique=True).map(sorted)
 
 def make_data(id,ts,z=0):
     return DataBlock(id=id, ts=ts, zs=[z]*(len(ts)-1))
