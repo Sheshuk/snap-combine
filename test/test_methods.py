@@ -1,4 +1,4 @@
-from snap.combine.methods import Fisher, Stouffer
+from snap.elements.combine.methods import Fisher, Stouffer
 from snap.datablock import DataBlock
 import numpy as np
 from hypothesis import given, strategies as st
@@ -21,7 +21,7 @@ def normal_DataBlock(shape, ids:str='c_{n}'):
 
 def datablocks(npoints: int, nclients: int):
     return st.builds(make_DataBlock, 
-            zs=nps.arrays(dtype=np.float, shape=(npoints,nclients), elements=z_value),
+            zs=nps.arrays(dtype=float, shape=(npoints,nclients), elements=z_value),
             )
 
 
