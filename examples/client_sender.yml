@@ -8,25 +8,20 @@ signal_shapes:
     - [20,  0]
 
 
-node1:
+node:
     generate:
         source: 
             .client.fake.sample_ts: {B: 2, S: *signal1, tSN: 120}
         steps:
-            - .util.monitor.tqdm_ticker: {desc: "Data"}
-            - .client.sigcalc.ShapeAnalysis: {B: 2,S: *signal1,time_window: [-2.0,10.0], dt: 0.1}
-            - .util.monitor.tqdm_ticker: {desc: "DataBlocks"}
-            - .client.setId: {id: "client1"}
-            - .zeromq.send: {address: "ipc://ipc_combiner"}
-
-node2:
-    generate:
-        source: 
-            .client.fake.sample_ts: {B: 5, S: *signal2, tSN: 120}
+            - .tqdm.counter: {desc: "Data"}
+            - .client.sigcalc.CountAna: { B: 2, time_window: [0,5], dt: 0.1, tChunk_min: 1}
+            - .tqdm.counter: {desc: "DataBlocks"}
+        to: [send, monitor]
+    send:
         steps:
-            - .util.monitor.tqdm_ticker: {desc: "Data"}
-            - .client.sigcalc.ShapeAnalysis: {B: 5,S: *signal2,time_window: [0.0,20.0], dt: 0.5}
-            - .util.monitor.tqdm_ticker: {desc: "DataBlocks"}
-            - .client.setId: {id: "client2"}
-            - .zeromq.send: {address: "ipc://ipc_combiner"}
-
+            - .client.setId: {id: "client1"}
+            - .io.zmq.send: {address: "ipc://ipc_combiner"}
+    monitor:
+        steps:
+          - util.max_zs_in_datablock
+          - .tqdm.meter: {desc: "Significance"}
