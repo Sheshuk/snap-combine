@@ -1,10 +1,14 @@
 #!/usr/bin/env python
+import setuptools 
 
-from setuptools import setup
+with open('README.md') as f:
+    readme = f.read()
 
-setup(name='snap-combine',
-        version='0.5.2',
+setuptools.setup(name='snap-combine',
+        version='0.6',
         description='SuperNova Async Pipeline: combining',
+        long_description=readme,
+        long_description_content_type='text/markdown',
         author='Andrey Sheshukov',
         author_email='ash@jinr.ru',
         packages=['snap.elements.combine','snap.elements.process','snap.elements.client'],
@@ -12,7 +16,8 @@ setup(name='snap-combine',
         install_requires=['numpy >= 1.19',
                           'snap-base[io] >=1.3.0',
                           'sn_stat >=0.3.2',
-                          'tqdm >= 4.53',
-        ]
+        ],
+        extras_require={'doc':['sphinx', 'sphinx-rtd-theme']},
+        python_requires='>=3.7'
      )
 
