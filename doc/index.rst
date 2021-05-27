@@ -10,10 +10,12 @@ This package contains additional pipeline elements for the combination of the su
 within `SNAP <https://github.com/Sheshuk/snap-base>`_ framework.
 
 
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-
+   
+   dataclass
    reference
 
 

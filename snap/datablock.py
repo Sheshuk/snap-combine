@@ -10,6 +10,19 @@ class DataBlock:
     id: str = None
 
     def __init__(self, ts, zs, id=None):
+        """Container for the significance time series. 
+
+        Significance is defined in time bins, so minimal data block can contain a single `zs` value, but two `ts` value, defining the time limits of this significance estimation.
+
+        Args:
+            ts (iterable of float) 
+                Time bin edges
+            zs (iterable of float)
+                Significance values for each time bin. Must be 1 value shorter than `ts`.
+            id (str)
+                Identifier of whatever created this datablock.
+                
+        """
         self.ts = np.array(ts, dtype=np.float64)
         self.zs = np.array(zs, dtype=np.float64)
         self.id=id
@@ -17,8 +30,10 @@ class DataBlock:
             raise ValueError(f"DataBlock sizes mismatch: ts ({len(ts)}) != zs ({len(zs)})+1")
 
     def T0(self):
+        "Lower time limit"
         return self.ts[0]
     def T1(self):
+        "Upper time limit"
         return self.ts[-1]
     def __len__(self):
         return len(self.zs)
