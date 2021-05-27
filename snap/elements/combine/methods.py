@@ -9,7 +9,18 @@ def x2p(x, Nexp):
     return chi2.sf(x, df=2*Nexp)
 
 def Fisher(data: DataBlock) -> DataBlock:
-    """Fisher combination method """
+    """
+    Fisher combination method, based on calculating test statistics
+    :math:`X^2_{2N} = -2\sum_i \log (p_i)`
+
+    which follows chi2 distribution, where `N` is number of clients combined. 
+
+    :Input:
+        :class:`DataBlock` with significance for one or many clients
+    :Output:
+        :class:`DataBlock` with combined significance, for the same time stamps as input.
+ 
+    """
     zs = np.ma.masked_invalid(data.zs)
     ps = np.ma.masked_array(z2p(zs),zs.mask)
     X = -2*np.sum(np.log(ps),axis=1)
@@ -20,17 +31,19 @@ def Fisher(data: DataBlock) -> DataBlock:
     return DataBlock(ts=data.ts,zs=zc)
 
 def Stouffer(weights: dict):
-    """Stouffer combination method: 
-    combined significance is linear combination of all significances:
-        z_c = sum(z_i * w_i)
+    """ Stouffer combination method: 
+    combined significance is linear combination of all input significances:
+    :math:`z_c = \sum_i(z_i \cdot w_i)`
 
-    Parameters
-    -------
-    weights: dict (srt, float)
-        Mapping det_id: w_i, providing the coefficients for linear combination
+    Args:
+        weights: dict (srt, float)
+            Mapping det_id: w_i, providing the coefficients for linear combination.
+    :Note: Weights don't need to be normalized: the normalization is calculated depending on which detector ids are present in a given datablock id
 
-    Weights don't need to be normalized: 
-    the normalization is calculated depending on which detector ids are present in a given datablock id
+    :Input:
+        :class:`DataBlock` with significance for one or many clients
+    :Output:
+        :class:`DataBlock` with combined significance, for the same time stamps as input.
     """
     def _f(data: DataBlock) -> DataBlock:
         zs = np.ma.masked_invalid(data.zs)

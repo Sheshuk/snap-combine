@@ -1,10 +1,22 @@
 import asyncio
 from sn_stat import Sampler, rate
-from snap.util import timing
+from snap import timing
 import numpy as np
 
 async def sample_ts(B, S=0, tSN=0, tChunk=10):
-    """Generate random event timestamps"""
+    """ Data :term:`source`, generating random event timestamps 
+    following the given rates, with signal injection.
+    
+    Args:
+        B(rate)
+            Background rate vs. time
+        S(rate)
+            Signal rate vs. time from signal start.
+        tSN(float)
+            Delay of the signal to start, after the generator started work.
+    Yields:
+        event timestamp in seconds
+    """
     R = rate(B)+rate(S).shift(tSN)
     t0 = 0
     while True:

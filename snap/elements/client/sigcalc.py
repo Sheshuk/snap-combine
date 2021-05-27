@@ -1,7 +1,7 @@
 import sn_stat as sn
 from snap.datablock import DataBlock
 import numpy as np
-from snap.util import timing
+from snap import timing
 
 class SignificanceCalculator:
     """Significance calculator using shape analysis
@@ -9,8 +9,6 @@ class SignificanceCalculator:
        Calculates SN observation significance using the analysis method, 
        based on the *sn_stat* module.
 
-       Calculator consumes the data timestamps (via :ShapeAnalysis.put: method) 
-       and produces :snap.datablock.DataBlock: with the SN observation significance 
 
 
        """
@@ -25,6 +23,10 @@ class SignificanceCalculator:
                 time step, seconds
             tChunk_min (float): 
                 minimal time duration of the produced chunk of data
+        :Input:
+            data (list of float): list of events' timestamps
+        :Output:
+            :snap.datablock.DataBlock: with the SN observation significance 
         """
         self.ana = ana
         self.t0 = timing.now()
@@ -56,12 +58,55 @@ class SignificanceCalculator:
         return DataBlock(np.append(ts,t_last),zs)
 
 def CountAna(B, time_window, *, dt=0.1, tChunk_min=1):
+    """ Processing :term:`step`: counting analysis to calculate significance
+
+    Args:
+        B (rate)
+            Background rate
+        time_window (tuple (float, float))
+            A relative time window to count the interactions, for example :code:`[-5,5]`.
+            Only interactions within the time window affect current significance.
+
+    Keyword Args:
+        dt (float): 
+            time step, seconds
+        tChunk_min (float): 
+            minimal time duration of the produced chunk of data
+    :Input:
+        data (list of float): list of events' timestamps
+    :Output:
+        :snap.datablock.DataBlock: with the SN observation significance 
+    """
+    
     ana = sn.CountingAnalysis(
             sn.DetConfig(B=B, time_window=time_window)
             )
     return SignificanceCalculator(ana, dt, tChunk_min)
 
 def ShapeAna(B,S, time_window="auto", *, dt=0.1, tChunk_min=1):
+    """ Processing :term:`step`: shape analysis to calculate significance
+
+    Args:
+        B (rate)
+            Background rate
+        S (rate)
+            Signal rate
+        time_window (tuple (float, float) or "auto")
+            A relative time window to count the interactions, for example :code:`[-5,5]`.
+            Only interactions within the time window affect current significance.
+            If "auto", try to get the range from signal shape.
+
+    Keyword Args:
+        dt (float): 
+            time step, seconds
+        tChunk_min (float): 
+            minimal time duration of the produced chunk of data
+    :Input:
+        data (list of float): list of events' timestamps
+    :Output:
+        :snap.datablock.DataBlock: with the SN observation significance 
+    """
+ 
     ana = sn.ShapeAnalysis(
             sn.DetConfig(B=B,S=S,time_window=time_window)
             )
