@@ -1,5 +1,5 @@
 import asyncio
-from ..datablock import DataBlock
+from snap.datablock import DataBlock
 from .databuffer import DataBuffer
 from .regions import RegionsQueue
 import numpy as np

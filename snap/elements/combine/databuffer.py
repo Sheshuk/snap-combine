@@ -1,4 +1,4 @@
-from ..datablock import DataBlock
+from snap.datablock import DataBlock
 import numpy as np
 
 class DataBuffer:

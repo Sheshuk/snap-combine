@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.stats import norm,chi2
-from ..datablock import DataBlock
+from snap.datablock import DataBlock
 def z2p(z):
     return norm.sf(z)
 def p2z(p):
