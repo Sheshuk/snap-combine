@@ -1,7 +1,10 @@
 import asyncio
 from sn_stat import Sampler, rate
-from snap import timing
 import numpy as np
+from datetime import datetime
+
+def now():
+    return datetime.now().timestamp()
 
 async def sample_ts(B, S=0, tSN=0, tChunk=10):
     """ Data :term:`source`, generating random event timestamps 
@@ -17,13 +20,14 @@ async def sample_ts(B, S=0, tSN=0, tChunk=10):
     Yields:
         event timestamp in seconds
     """
-    R = rate(B)+rate(S).shift(tSN)
-    t0 = 0
+    t0 = now()
+    Sg = rate(S).shift(t0+tSN)
+    R = rate(B)+Sg
     while True:
         ts = Sampler(R,time_window=[t0,t0+tChunk]).sample()
         ts=np.sort(ts)
         for t in ts:
-            await asyncio.sleep(t-t0)
-            t0=t
-            yield timing.now()
+            await asyncio.sleep(t-now())
+            yield t
+        t0+=tChunk
 
