@@ -88,3 +88,14 @@ def test_drop_tail(ts, t0):
             assert len(d1)==0
             assert d1.ts[0]==t0
 
+@given(ts1=times, ts2=times)
+def test_data_update(ts1,ts2):
+    d0 = random_DataBlock(ts1)
+    d1 = random_DataBlock(ts2)
+    d = d0
+    d.update(d1)
+    for t in d.ts:
+        if t in d0:
+            assert d.at(t) == d0.at(t)
+        else:
+            assert d.at(t) == d1.at(t)
