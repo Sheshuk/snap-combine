@@ -35,6 +35,12 @@ class DataBlock:
     def T1(self):
         "Upper time limit"
         return self.ts[-1]
+    def __contains__(self, t):
+        """Chack if given t is contained in this datablock, 
+        i.e. (t>=T0)and(t<T1)
+        """
+        return (t>self.T0())&(t<self.T1())
+
     def __len__(self):
         return len(self.zs)
 
