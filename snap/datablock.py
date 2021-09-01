@@ -47,10 +47,17 @@ class DataBlock:
     def __str__(self):
         s = '\n'.join([f'{t:10.3f} {z:5.3f}'for t,z in zip(self.ts, self.zs)])
         return f'#{self.id}: ts zs\n'+ s
+    def __repr__(self):
+        return str(self)
 
     def __eq__(self, other):
-        return (self.id==other.id) & np.allclose(self.ts,other.ts)& \
-            np.allclose(self.zs,other.zs,equal_nan=True)
+        try:
+            return (self.id==other.id) & \
+                    len(self)==len(other) & \
+                    np.allclose(self.ts,other.ts)& \
+                    np.allclose(self.zs,other.zs,equal_nan=True)
+        except:
+            return False
 
     def __add__(self, other):
         """ Concatenate two datablocks of the same id"""
