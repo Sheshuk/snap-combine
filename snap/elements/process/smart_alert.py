@@ -17,7 +17,7 @@ class SmartAlert:
     bookkeeping of these parts and producing 'NEW/UPD/DEL' commands  for these clusters.
     """
     clu_id = 0
-    def __init__(self, thr, timeout):
+    def __init__(self, threshold:float=5, timeout:float=600):
         """
         Args:
             thr (float)
@@ -45,13 +45,13 @@ class SmartAlert:
         And they will be output in separate iterations.
         """
 
-        self.data = DataBlock()
-        self.thr = thr
+        self.data = None
+        self.thr = threshold
         self.timeout = timeout
         self.clusters = []
         self.queue = asyncio.Queue()
         
-    def droip_tail(self):
+    def drop_tail(self):
         t_drop = self.data.T1()-self.timeout
 
         #drop obsolete clusters
@@ -61,20 +61,23 @@ class SmartAlert:
             if t_drop in c:
                 t_drop = c.T0()
         #cut the data
-        self.data.drop_tail(t_drop)
+        self.data = self.data.drop_tail(t_drop)
 
     async def put(self, data: DataBlock):
-        self.data.update(data)
+        if self.data is None:
+            self.data = data
+        else:
+            self.data = self.data.update(data)
         self.drop_tail()
         clusters = list(find_clusters(self.data, self.thr))
         res = self.update_clusters(clusters)
-        await self.queue.put(res)
+        for method,clus in res.items():
+            for c in clus:
+                print(method,c)
+                await self.queue.put((method,c))
 
     async def get(self):
-        async for msg in self.queue.get():
-            for method,clus in msg.items():
-                for c in clus:
-                    yield method, c
+        return await self.queue.get()
 
     def update_clusters(self, clusters):
         """Update the current clusters with the new ones.
@@ -98,6 +101,7 @@ class SmartAlert:
             return d.zs.max()
 
         to_upd = []
+        to_old = []
         to_new = clusters
         to_del = self.clusters
         for c0 in sorted(self.clusters, key=maxz):
@@ -106,12 +110,15 @@ class SmartAlert:
                     c1.id = c0.id
                     to_del.remove(c0)
                     to_new.remove(c1)
-                    to_upd.append(c1)
+                    if c1!=c0:
+                        to_upd.append(c1)
+                    else:
+                        to_old.append(c1)
                     break
         #set IDs to new clusters
         for c in to_new:
             self.clu_id+=1
             c.id = self.clu_id
-        self.clusters = to_new+to_upd
+        self.clusters = to_old+to_new+to_upd
         return {'UPD': to_upd, 'DEL': to_del, 'NEW': to_new}
 

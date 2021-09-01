@@ -6,3 +6,4 @@ Processing and analyzing incoming data
     :members:
 """
 from .threshold import Threshold
+from .smart_alert import SmartAlert
