@@ -5,12 +5,14 @@ from snap.datablock import DataBlock
 def find_clusters(data: DataBlock, thr: float):
     idx = np.nonzero(data.zs>thr)[0]
     #find the borders between groups
-    borders = np.where(np.diff(idx, prepend=0, append=0)!=1)[0]
+    borders = np.where(np.diff(idx, prepend=-np.inf, append=np.inf)>1)[0]
     #return each group
+    res = []
     for i0,i1 in  zip(borders[:-1],borders[1:]):
         g  = idx[slice(i0,i1)]
         gt = np.append(g, g[-1]+1)
-        yield DataBlock(data.ts[gt],data.zs[g], id=data.id)
+        res += [DataBlock(data.ts[gt],data.zs[g], id=data.id)]
+    return res
 
 class SmartAlert:
     """A precessing :term:`step` for detecting the parts (clusters) of the time series above threshold, 
@@ -69,7 +71,7 @@ class SmartAlert:
         else:
             self.data = self.data.update(data)
         self.drop_tail()
-        clusters = list(find_clusters(self.data, self.thr))
+        clusters = find_clusters(self.data, self.thr)
         res = self.update_clusters(clusters)
         for method,clus in res.items():
             for c in clus:
@@ -104,8 +106,8 @@ class SmartAlert:
         to_old = []
         to_new = clusters
         to_del = self.clusters
-        for c0 in sorted(self.clusters, key=maxz):
-            for c1 in sorted(clusters, key=maxz):
+        for c0 in sorted(self.clusters, key=maxz, reverse=True):
+            for c1 in sorted(clusters, key=maxz, reverse=True):
                 if collides(c0,c1):
                     c1.id = c0.id
                     to_del.remove(c0)
