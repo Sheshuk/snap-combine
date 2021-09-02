@@ -8,6 +8,12 @@ def p2z(p):
 def x2p(x, Nexp):
     return chi2.sf(x, df=2*Nexp)
 
+def get_nonzero_ids(data):
+    print(data.id)
+    res =[i for i,z in zip(data.id,data.zs) if np.any(np.isnan(z)==False)]
+    print(res)
+    return res
+
 def Fisher(data: DataBlock) -> DataBlock:
     """
     Fisher combination method, based on calculating test statistics
@@ -28,7 +34,7 @@ def Fisher(data: DataBlock) -> DataBlock:
     Nexp = (zs.mask==False).sum(axis=1)
     pc = x2p(X, Nexp=Nexp)
     zc = p2z(pc)
-    return DataBlock(ts=data.ts,zs=zc)
+    return DataBlock(ts=data.ts,zs=zc, id=get_nonzero_ids(data))
 
 def Stouffer(weights: dict):
     """ Stouffer combination method: 
@@ -54,5 +60,5 @@ def Stouffer(weights: dict):
         w2 = np.sqrt(np.sum(ws**2, axis=1))
         zc = (ws*zs).sum(axis=1)
         zc = (zc/w2).T
-        return DataBlock(ts=data.ts,zs=zc)
+        return DataBlock(ts=data.ts,zs=zc,id=get_nonzero_ids(data))
     return _f
