@@ -47,8 +47,8 @@ class SignificanceCalculator:
 
     async def get(self) -> DataBlock:
         """Calculate the significance and return it in a :snap.DataBlock: """
-        tw0,tw1 = self.ana.det.time_window 
-        time_start = self.t0+tw1-tw0
+        tw0,tw1 = self.ana.time_window 
+        time_start = self.t0+tw1-tw0+self.delay
         await timing.wait_until(time_start, self.tChunk_min)
         t1 = timing.now()-self.delay
         #define time regions
