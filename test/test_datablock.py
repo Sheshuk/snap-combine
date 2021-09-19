@@ -1,6 +1,6 @@
 from snap.datablock import DataBlock
 import numpy as np
-from hypothesis import given, strategies as st
+from hypothesis import given, strategies as st, note
 import pytest
 
 time_val = st.floats(-1e10, 1e10, width=32, allow_nan=False, allow_infinity=False)
@@ -88,3 +88,24 @@ def test_drop_tail(ts, t0):
             assert len(d1)==0
             assert d1.ts[0]==t0
 
+@given(ts1=times, ts2=times)
+def test_add_time_point(ts1,ts2):
+    d0 = random_DataBlock(ts1)
+    d1 = d0.add_time_point(ts2)
+    for t in ts2:
+        if t in d0:
+            assert (t in d1.ts) 
+            assert np.isclose(d1.at(t),d0.at(t), equal_nan=True)
+
+
+@given(ts1=times, ts2=times)
+def test_data_update(ts1,ts2):
+    d0 = random_DataBlock(ts1)
+    d1 = random_DataBlock(ts2)
+    d = d0.update(d1)
+
+    for t in d.ts:
+        if t in d1:
+            assert np.isclose(d.at(t),d1.at(t),equal_nan=True)
+        else:
+            assert np.isclose(d.at(t),d0.at(t),equal_nan=True)

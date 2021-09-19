@@ -9,10 +9,8 @@ class SignificanceCalculator:
        Calculates SN observation significance using the analysis method, 
        based on the *sn_stat* module.
 
-
-
        """
-    def __init__(self, ana, dt=0.1, tChunk_min=1):
+    def __init__(self, ana, dt=0.1, tChunk_min=1, delay=0):
         """
         Create significance calculator with given bg and sg rates
 
@@ -23,13 +21,18 @@ class SignificanceCalculator:
                 time step, seconds
             tChunk_min (float): 
                 minimal time duration of the produced chunk of data
+            delay (float):
+                processing delay in seconds. 
+                This means that maximum assumed supernova time will be::
+                    now()-delay-ana.time_window[1]
         :Input:
             data (list of float): list of events' timestamps
         :Output:
             :snap.datablock.DataBlock: with the SN observation significance 
         """
         self.ana = ana
-        self.t0 = timing.now()
+        self.delay = delay
+        self.t0 = timing.now()-delay
         self.dt=dt
         self.tChunk_min = tChunk_min
         self.data = np.array([])
@@ -44,10 +47,10 @@ class SignificanceCalculator:
 
     async def get(self) -> DataBlock:
         """Calculate the significance and return it in a :snap.DataBlock: """
-        tw0,tw1 = self.ana.det.time_window 
-        time_start = self.t0+tw1-tw0
+        tw0,tw1 = self.ana.time_window 
+        time_start = self.t0+tw1-tw0+self.delay
         await timing.wait_until(time_start, self.tChunk_min)
-        t1 = timing.now()
+        t1 = timing.now()-self.delay
         #define time regions
         ts = np.arange(self.t0-tw0,t1-tw1, self.dt)
         #calculate significance
@@ -57,7 +60,7 @@ class SignificanceCalculator:
         self.drop_tail(t_last + tw0)
         return DataBlock(np.append(ts,t_last),zs)
 
-def CountAna(B, time_window, *, dt=0.1, tChunk_min=1):
+def CountAna(B, time_window, *, dt=0.1, tChunk_min=1, delay=0):
     """ Processing :term:`step`: counting analysis to calculate significance
 
     Args:
@@ -72,6 +75,10 @@ def CountAna(B, time_window, *, dt=0.1, tChunk_min=1):
             time step, seconds
         tChunk_min (float): 
             minimal time duration of the produced chunk of data
+        delay (float):
+            processing delay in seconds. 
+            This means that maximum assumed supernova time will be::
+                now()-delay-ana.time_window[1]
     :Input:
         data (list of float): list of events' timestamps
     :Output:
@@ -81,9 +88,9 @@ def CountAna(B, time_window, *, dt=0.1, tChunk_min=1):
     ana = sn.CountingAnalysis(
             sn.DetConfig(B=B, time_window=time_window)
             )
-    return SignificanceCalculator(ana, dt, tChunk_min)
+    return SignificanceCalculator(ana, dt, tChunk_min, delay)
 
-def ShapeAna(B,S, time_window="auto", *, dt=0.1, tChunk_min=1):
+def ShapeAna(B,S, time_window="auto", *, dt=0.1, tChunk_min=1, delay=0):
     """ Processing :term:`step`: shape analysis to calculate significance
 
     Args:
@@ -101,6 +108,10 @@ def ShapeAna(B,S, time_window="auto", *, dt=0.1, tChunk_min=1):
             time step, seconds
         tChunk_min (float): 
             minimal time duration of the produced chunk of data
+        delay (float):
+            processing delay in seconds. 
+            This means that maximum assumed supernova time will be::
+                now()-delay-ana.time_window[1]
     :Input:
         data (list of float): list of events' timestamps
     :Output:
@@ -110,4 +121,4 @@ def ShapeAna(B,S, time_window="auto", *, dt=0.1, tChunk_min=1):
     ana = sn.ShapeAnalysis(
             sn.DetConfig(B=B,S=S,time_window=time_window)
             )
-    return SignificanceCalculator(ana, dt, tChunk_min)
+    return SignificanceCalculator(ana, dt, tChunk_min, delay)

@@ -1,7 +1,7 @@
 signal_shapes:
   - &signal1
-    - [-2.0, 0.2, 10]
-    - [0,    10,   0]
+    - [-2.0, 0, 10]
+    - [0,  10,   0]
 
   - &signal2
     - [0,  20]
@@ -11,8 +11,9 @@ signal_shapes:
 node:
     generate:
         source: 
-            .client.fake.sample_ts: {B: 2, S: *signal1, tSN: 120}
+            .client.fake.sample_ts: {B: 1, S: *signal1, tSN: 10}
         steps:
+            - .client.fake.realtime
             - .tqdm.counter: {desc: "Data"}
             - .client.sigcalc.CountAna: { B: 2, time_window: [0,5], dt: 0.1, tChunk_min: 1}
             - .tqdm.counter: {desc: "DataBlocks"}
@@ -21,3 +22,21 @@ node:
         steps:
             - .client.setId: {id: "client1"}
             - .io.zmq.send: {address: "ipc://ipc_combiner"}
+              
+
+node2:
+    detonate:
+        source:
+            .client.fake.detonator: {delay: 15} 
+        steps:
+            - .timing.every: {seconds: 60}
+            - .output.dump: {prefix: "detonator"}
+        to: generate
+
+    generate:
+        steps:
+            - .client.fake.Generator: {B: 1, S: *signal1}
+            - .client.fake.realtime
+            - .tqdm.counter: {desc: "Data"}
+              #to: process
+
