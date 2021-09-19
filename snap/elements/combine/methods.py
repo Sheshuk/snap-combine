@@ -9,10 +9,8 @@ def x2p(x, Nexp):
     return chi2.sf(x, df=2*Nexp)
 
 def get_nonzero_ids(data):
-    print(data.id)
-    res =[i for i,z in zip(data.id,data.zs) if np.any(np.isnan(z)==False)]
-    print(res)
-    return res
+    res =[i for i,z in zip(data.id,data.zs.T) if np.any(np.isnan(z)==False)]
+    return '+'.join(res)
 
 def Fisher(data: DataBlock) -> DataBlock:
     """
