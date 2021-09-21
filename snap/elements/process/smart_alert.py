@@ -18,7 +18,7 @@ class SmartAlert:
     """A precessing :term:`step` for detecting the parts (clusters) of the time series above threshold, 
     bookkeeping of these parts and producing 'NEW/UPD/DEL' commands  for these clusters.
     """
-    clu_id = 0
+    alert_id = 0
     def __init__(self, threshold:float=5, timeout:float=600):
         """
         Args:
@@ -75,7 +75,6 @@ class SmartAlert:
         res = self.update_clusters(clusters)
         for method,clus in res.items():
             for c in clus:
-                print(method,c)
                 await self.queue.put((method,c))
 
     async def get(self):
@@ -108,6 +107,7 @@ class SmartAlert:
         to_del = self.clusters
         for c0 in sorted(self.clusters, key=maxz, reverse=True):
             for c1 in sorted(clusters, key=maxz, reverse=True):
+                c1.det_id = c1.id
                 if collides(c0,c1):
                     c1.id = c0.id
                     to_del.remove(c0)
@@ -119,8 +119,8 @@ class SmartAlert:
                     break
         #set IDs to new clusters
         for c in to_new:
-            self.clu_id+=1
-            c.id = self.clu_id
+            self.alert_id+=1
+            c.id = self.alert_id
         self.clusters = to_old+to_new+to_upd
         return {'UPD': to_upd, 'DEL': to_del, 'NEW': to_new}
 
