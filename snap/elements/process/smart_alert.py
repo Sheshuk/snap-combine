@@ -101,13 +101,14 @@ class SmartAlert:
         def maxz(d):
             return d.zs.max()
 
+        for c in clusters:
+            c.det_id = c.id
         to_upd = []
         to_old = []
         to_new = clusters
         to_del = self.clusters
         for c0 in sorted(self.clusters, key=maxz, reverse=True):
             for c1 in sorted(clusters, key=maxz, reverse=True):
-                c1.det_id = c1.id
                 if collides(c0,c1):
                     c1.id = c0.id
                     to_del.remove(c0)
