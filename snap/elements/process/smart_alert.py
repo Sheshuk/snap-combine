@@ -69,6 +69,8 @@ class SmartAlert:
             self.data = data
         else:
             self.data = self.data.update(data)
+        self.det_id = data.id
+
         self.drop_tail()
         clusters = find_clusters(self.data, self.thr)
         res = self.update_clusters(clusters)
@@ -100,8 +102,8 @@ class SmartAlert:
         def maxz(d):
             return d.zs.max()
 
-        for c in clusters:
-            c.det_id = c.id
+        for c in clusters+self.clusters:
+            c.det_id = self.det_id
         old_clusters = sorted(self.clusters, key=maxz, reverse=True)
         new_clusters = sorted(clusters, key=maxz, reverse=True)
 
