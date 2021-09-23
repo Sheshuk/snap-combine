@@ -2,8 +2,7 @@
 Processing and analyzing incoming data
 ========================================================================
 
-.. autoclass:: snap.elements.process.Threshold
+.. autoclass:: snap.elements.process.SmartAlert
     :members:
 """
-from .threshold import Threshold
 from .smart_alert import SmartAlert

@@ -18,7 +18,7 @@ class SmartAlert:
     """A precessing :term:`step` for detecting the parts (clusters) of the time series above threshold, 
     bookkeeping of these parts and producing 'NEW/UPD/DEL' commands  for these clusters.
     """
-    clu_id = 0
+    alert_id = 0
     def __init__(self, threshold:float=5, timeout:float=600):
         """
         Args:
@@ -55,13 +55,12 @@ class SmartAlert:
         
     def drop_tail(self):
         t_drop = self.data.T1()-self.timeout
-
-        #drop obsolete clusters
-        self.clusters = [c for c in self.clusters if(c.T1()>=t_drop)]
         #shift drop time to avoid cutting existing clusters
         for c in self.clusters:
             if t_drop in c:
                 t_drop = c.T0()
+        #drop obsolete clusters
+        self.clusters = [c for c in self.clusters if(c.T1()>=t_drop)]
         #cut the data
         self.data = self.data.drop_tail(t_drop)
 
@@ -70,12 +69,13 @@ class SmartAlert:
             self.data = data
         else:
             self.data = self.data.update(data)
+        self.det_id = data.id
+
         self.drop_tail()
         clusters = find_clusters(self.data, self.thr)
         res = self.update_clusters(clusters)
         for method,clus in res.items():
             for c in clus:
-                print(method,c)
                 await self.queue.put((method,c))
 
     async def get(self):
@@ -102,16 +102,21 @@ class SmartAlert:
         def maxz(d):
             return d.zs.max()
 
+        for c in clusters+self.clusters:
+            c.det_id = self.det_id
+        old_clusters = sorted(self.clusters, key=maxz, reverse=True)
+        new_clusters = sorted(clusters, key=maxz, reverse=True)
+
         to_upd = []
         to_old = []
-        to_new = clusters
-        to_del = self.clusters
-        for c0 in sorted(self.clusters, key=maxz, reverse=True):
-            for c1 in sorted(clusters, key=maxz, reverse=True):
+        to_new = new_clusters
+        to_del = old_clusters
+        for c0 in list(to_del):
+            for c1 in list(to_new):
                 if collides(c0,c1):
-                    c1.id = c0.id
                     to_del.remove(c0)
                     to_new.remove(c1)
+                    c1.id = c0.id
                     if c1!=c0:
                         to_upd.append(c1)
                     else:
@@ -119,8 +124,8 @@ class SmartAlert:
                     break
         #set IDs to new clusters
         for c in to_new:
-            self.clu_id+=1
-            c.id = self.clu_id
+            self.alert_id+=1
+            c.id = self.alert_id
         self.clusters = to_old+to_new+to_upd
         return {'UPD': to_upd, 'DEL': to_del, 'NEW': to_new}
 

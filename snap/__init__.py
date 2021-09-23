@@ -1,1 +1,1 @@
-__version_combine__="0.7"
+__version_combine__="0.8"
