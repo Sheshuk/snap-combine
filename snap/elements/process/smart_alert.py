@@ -55,13 +55,12 @@ class SmartAlert:
         
     def drop_tail(self):
         t_drop = self.data.T1()-self.timeout
-
-        #drop obsolete clusters
-        self.clusters = [c for c in self.clusters if(c.T1()>=t_drop)]
         #shift drop time to avoid cutting existing clusters
         for c in self.clusters:
             if t_drop in c:
                 t_drop = c.T0()
+        #drop obsolete clusters
+        self.clusters = [c for c in self.clusters if(c.T1()>=t_drop)]
         #cut the data
         self.data = self.data.drop_tail(t_drop)
 
@@ -70,6 +69,8 @@ class SmartAlert:
             self.data = data
         else:
             self.data = self.data.update(data)
+        self.det_id = data.id
+
         self.drop_tail()
         clusters = find_clusters(self.data, self.thr)
         res = self.update_clusters(clusters)
@@ -101,17 +102,21 @@ class SmartAlert:
         def maxz(d):
             return d.zs.max()
 
+        for c in clusters+self.clusters:
+            c.det_id = self.det_id
+        old_clusters = sorted(self.clusters, key=maxz, reverse=True)
+        new_clusters = sorted(clusters, key=maxz, reverse=True)
+
         to_upd = []
         to_old = []
-        to_new = clusters
-        to_del = self.clusters
-        for c0 in sorted(self.clusters, key=maxz, reverse=True):
-            for c1 in sorted(clusters, key=maxz, reverse=True):
-                c1.det_id = c1.id
+        to_new = new_clusters
+        to_del = old_clusters
+        for c0 in list(to_del):
+            for c1 in list(to_new):
                 if collides(c0,c1):
-                    c1.id = c0.id
                     to_del.remove(c0)
                     to_new.remove(c1)
+                    c1.id = c0.id
                     if c1!=c0:
                         to_upd.append(c1)
                     else:
