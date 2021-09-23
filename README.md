@@ -1,9 +1,11 @@
 # snap-combine 
 ![Tests](https://github.com/Sheshuk/snap-combine/workflows/Python%20package/badge.svg) ![Deploy](https://github.com/Sheshuk/snap-combine/workflows/Upload%20Python%20Package/badge.svg) ![PyPI](https://img.shields.io/pypi/v/snap-combine) ![release](https://img.shields.io/github/v/release/Sheshuk/snap-combine?include_prereleases) 
 
-Code for combining SN significance from several detectors/experiments
+Code for combining SN significance from several detectors/experiments.
 
 This package contains plugins for [SNAP](https://github.com/Sheshuk/snap-base) framework.
+
+[Documentation](https://snap-combine.readthedocs.io)
 
 ## Installation
 ```
