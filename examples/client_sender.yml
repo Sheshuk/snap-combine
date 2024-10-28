@@ -1,7 +1,7 @@
 config:
   - &detector_id "${DETECTOR}"
-  - &seconds_to_SN 10
-
+  - &seconds_to_SN 30
+  - &bg_level 1
   - signal_shapes:
     - &signal1
       - [-2.0, 0, 10]
@@ -14,10 +14,10 @@ config:
 
 node: !Node
     - !chain
-        - !from .client.fake.sample_ts: {B: 1, S: *signal1, tSN: *seconds_to_SN}
-        - .client.fake.realtime
+        - !from .client.fake.sample_ts: {B: *bg_level, S: *signal1, tSN: *seconds_to_SN}
+        - .client.fake.realtime: {}
         - .tqdm.counter: {desc: "Data"}
-        - .client.sigcalc.CountAna: { B: 2, time_window: [0,5], dt: 0.1, tChunk_min: 1}
+        - .client.sigcalc.CountAna: { B: *bg_level, time_window: [0,5], dt: 0.1, tChunk_min: 1}
         - .tqdm.counter: {desc: "DataBlocks"}
         - !to Sender
 
