@@ -13,10 +13,12 @@ setuptools.setup(name='snap-combine',
         packages=['snap.elements.combine','snap.elements.process','snap.elements.client'],
         py_modules=['snap.datablock'],
         install_requires=['numpy >= 1.19',
-                          'snap-base[io] >=1.3.3',
-                          'sn_stat==0.3.3',
+                          'snap-base >=2.0.3',
+                          'sn_stat>=0.3.4',
         ],
-        extras_require={'doc':['sphinx', 'sphinx-rtd-theme']},
+        extras_require={'doc':['sphinx', 'sphinx-rtd-theme'],
+                        'test':['flake8','pytest','hypothesis','pytest-asyncio']
+        },
         python_requires='>=3.7'
      )
 

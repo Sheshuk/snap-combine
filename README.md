@@ -12,37 +12,6 @@ This package contains plugins for [SNAP](https://github.com/Sheshuk/snap-base) f
 python -m pip install snap-combine
 ```
 
-## Plugins
-
-This package contains plugins which can be used in new snap pipeline configurations.
-
-#### Monitoring: `snap.util.monitor`
-
-* `tqdm_ticker`: a provides [tqdm](https://github.com/tqdm/tqdm)-based ticker, which counts the data flow and data rate through current step.
-
-#### Generating client data: `snap.client.fake`
-
-* `sample_ts`: Generates the neutrino interaction timestamps, using the given rate. Can simulate the supernova signal at the given time.
-
-#### Processing client data: `snap.client`
-
-* `sigcalc.ShapeAnalysis`: calculate supernova significance using shape analysis
-* `setId`: change the datablock ID
-
-#### Combination: `snap.combine`:
-
-* `Buffer`: accumulate the data to synchrnize before combining
-* `methods.Fisher`:   combine data using Fisher's combination method
-* `methods.Stouffer`: combine data using Stouffer's combination method
-
-#### Triggering: `snap.util.threshold`
-
-* Threshold: select and forward only portions of data with significance above given threshold
-
-#### Misc: `snap.util`
-
-* `dump_to_file`: Dump data to given file
-
 ## Example
 
 Example configurations provided the `examples` dir use these steps to 
@@ -51,17 +20,17 @@ Example configurations provided the `examples` dir use these steps to
 
 On client side run 
 ```
-snap client_sender.yml -n node1
+DETECTOR="det_name_1" snap_run client_sender.yml
 ```
 
-Optionally in another session:
+Optionally in another terminal session:
 ```
-snap client_sender.yml -n node2
+DETECTOR="det_name_2" snap_run client_sender.yml
 ```
 
 In another session (combination side):
 ```
-snap combine.yml
+snap_run combine.yml
 ```
 
 You should see the monitoring ticks for all nodes.

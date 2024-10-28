@@ -1,17 +1,13 @@
-node:
-    receive:
-        source: 
-            .io.zmq.recv: {address: "ipc://ipc_combiner"}
-        steps:
-            - .tqdm.counter: {desc: "Data received"}
-            - .output.dump_to_file: {fname: "data_received.dat"}
+node: !Node
+    - !chain
+        - !from .io.zmq.recv: {address: "ipc://ipc_combiner"}
+        - .tqdm.counter: {desc: "Data received"}
+        - .output.dump_to_file: {fname: "data_received.dat"}
+        - !to Combine
 
-            - .combine.Buffer: {delay: 5, timeout: 600}
-            - .combine.methods.Fisher
-            - .tqdm.counter: {desc: "Data combined"}
-            - .output.dump_to_file: {fname: "data_combined.dat"}
-
-            - .process.Threshold: {thr: 5}
-            - .tqdm.counter: {desc: "Triggers"}
-            - .output.dump_to_file: {fname: "data_triggered.dat"}
+    - !chain:Combine
+        - .combine.Buffer: {delay: 5, timeout: 600}
+        - .combine.methods.Fisher
+        - .tqdm.counter: {desc: "Data combined"}
+        - .output.dump_to_file: {fname: "data_combined.dat"}
 
