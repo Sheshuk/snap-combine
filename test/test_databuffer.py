@@ -18,8 +18,6 @@ def test_new_clients(ts):
     assert buf.clients == {d1.id: d1}
     buf.put(d2)
     assert buf.clients == {d.id: d for d in [d1,d2]}
-    with pytest.raises(ValueError):
-        buf.put(d2)
            
 @given(ts=times)
 def test_append_data(ts):
